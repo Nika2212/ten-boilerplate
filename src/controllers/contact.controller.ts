@@ -1,16 +1,12 @@
 import { BaseController } from "../core/base.controller";
 import { Request, Response } from "express";
-import { ContactSchema } from "../models/contact.model";
-import * as mongoose from 'mongoose';
-
-const Contact = mongoose.model('Contact', ContactSchema);
+import { Contact } from "../models/contact.model";
+import { User } from "../models/user.model";
 
 export class ContactController extends BaseController {
-    public createNewContact(req: Request, res: Response): void {
-        const newContact = new Contact(req.body);
+    public async getContactList(req: Request, res: Response): Promise<Response> {
+        const contactList: any[] = await Contact.find({});
 
-        newContact.save()
-            .then((contact: any) => res.json(contact))
-            .catch((error: any) => res.send(error))
+        return res.send(contactList);
     }
 }

@@ -1,5 +1,6 @@
 import path from 'path';
 import express from 'express';
+import session from "express-session";
 import * as bodyParser from 'body-parser';
 import { BaseRoute } from "./core/base.route";
 import { APIRouteClass } from "./routes/api.route";
@@ -28,8 +29,15 @@ export class Application {
         this.app.use(bodyParser.urlencoded({extended: false}));
         this.app.use(express.static(path.join(__dirname, 'public')));
         this.app.set('views', path.join(__dirname, 'views'));
+        this.app.disable('x-powered-by');
         this.app.set('view engine', 'html');
         this.app.engine('html', require('ejs').renderFile);
+        this.app.use(session({
+            secret: process.env.SERVER_KEY,
+            resave: true,
+            saveUninitialized: true,
+            cookie: {secure: process.env.NODE_MODE === 'production'}
+        }));
     }
     private appendRoutes(): void {
         this.routes.push(<APIRouteClass>new APIRouteClass(this.app));
